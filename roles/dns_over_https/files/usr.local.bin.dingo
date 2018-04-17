@@ -1,0 +1,13 @@
+#include <tunables/global>
+
+/usr/local/bin/dingo {
+  #include <abstractions/base>
+  #include <abstractions/nameservice>
+
+  capability dac_override,
+  capability net_bind_service,
+  network inet raw,
+
+  /proc/sys/net/core/somaxconn r,
+  /usr/local/bin/dingo mr,
+}

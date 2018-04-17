@@ -1,0 +1,50 @@
+---
+- name: Ubuntu | Download the latest binary
+  get_url:
+    url: "{{ item['browser_download_url'] }}"
+    dest: /usr/local/bin/dingo
+    mode: '0755'
+    force: true
+  with_items: "{{ dingo_latest['json']['assets'] }}"
+  no_log: true
+  when: '"linux-amd64" in item.name'
+  notify: restart dingo
+
+- block:
+  - name: Ubuntu | Dingo profile for apparmor configured
+    copy:
+      src: usr.local.bin.dingo
+      dest: /etc/apparmor.d/usr.local.bin.dingo
+      owner: root
+      group: root
+      mode: 0600
+    notify: restart dingo
+
+  - name: Ubuntu | Enforce the dingo AppArmor policy
+    command: aa-enforce usr.local.bin.dingo
+    changed_when: false
+  tags: apparmor
+  when: apparmor_enabled|default(false)|bool == true
+
+- name: Ubuntu | Configure dingo
+  copy:
+    content: ARGS="{{ dingo_flags }}"
+    dest: /etc/default/dingo
+  notify: restart dingo
+
+- name: Ubuntu | Configure systemd unit
+  template:
+    src: dingo.service.j2
+    dest: /etc/systemd/system/dingo.service
+  notify:
+    - daemon reload
+    - restart dingo
+
+- name: Ubuntu | Dingo enabled and started
+  systemd:
+    name: dingo
+    state: started
+    daemon_reload: true
+    enabled: true
+
+- meta: flush_handlers

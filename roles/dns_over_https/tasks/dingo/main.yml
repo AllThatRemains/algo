@@ -1,0 +1,44 @@
+---
+- block:
+  - name: Create dingo user
+    user:
+      name: dingo
+      comment: Dingo DNS-over-HTTPS Daemon
+      state: present
+      createhome: false
+      home: /nonexistent
+      shell: /usr/sbin/nologin
+
+  - name: Retrive the latest binary
+    uri:
+      url: https://api.github.com/repos/pforemski/dingo/releases/latest
+    register: dingo_latest
+    ignore_errors: true
+
+  - name: Set default dingo assets
+    set_fact:
+      dingo_latest:
+        json:
+          assets:
+            - name: dingo-freebsd-386
+              browser_download_url: "https://github.com/pforemski/dingo/releases/download/{{ dingo_version_if_latest_unavailable }}/dingo-freebsd-386"
+            - name: dingo-freebsd-amd64
+              browser_download_url: "https://github.com/pforemski/dingo/releases/download/{{ dingo_version_if_latest_unavailable }}/dingo-freebsd-amd64"
+            - name: dingo-linux-386
+              browser_download_url: "https://github.com/pforemski/dingo/releases/download/{{ dingo_version_if_latest_unavailable }}/dingo-linux-386"
+            - name: dingo-linux-amd64
+              browser_download_url: "https://github.com/pforemski/dingo/releases/download/{{ dingo_version_if_latest_unavailable }}/dingo-linux-amd64"
+    when: dingo_latest.failed
+
+  - name: Include tasks for Ubuntu
+    include_tasks: ubuntu.yml
+    when: '"Ubuntu" in OS.stdout'
+
+  - name: Include tasks for FreeBSD
+    include_tasks: freebsd.yml
+    when: '"FreeBSD" in OS.stdout'
+  rescue:
+    - debug: var=fail_hint
+      tags: always
+    - fail:
+      tags: always

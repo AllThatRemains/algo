@@ -1,0 +1,32 @@
+---
+- name: FreeBSD | Download the latest binary
+  get_url:
+    url: "{{ item['browser_download_url'] }}"
+    dest: /usr/local/bin/dingo
+    mode: '0755'
+    force: true
+  with_items: "{{ dingo_latest['json']['assets'] }}"
+  no_log: true
+  when: '"freebsd-amd64" in item.name'
+  notify: restart dingo
+
+- name: FreeBSD | Configure rc script
+  copy:
+    src: rc.dingo.sh
+    dest: /usr/local/etc/rc.d/dingo
+  notify: restart dingo
+
+- name: FreeBSD | Configure dingo arguments
+  lineinfile:
+    path: /etc/rc.conf
+    regexp: '^dingo_flags=.*'
+    line: 'dingo_flags="{{ dingo_flags }}"'
+  notify: restart dingo
+
+- name: FreeBSD | Dingo enabled and started
+  service:
+    name: dingo
+    state: started
+    enabled: true
+
+- meta: flush_handlers

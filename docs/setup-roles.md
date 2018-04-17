@@ -20,6 +20,9 @@
 * **DNS-based Adblocking**
   * Install the [dnsmasq](http://www.thekelleys.org.uk/dnsmasq/doc.html) local resolver with a blacklist for advertising domains
   * Constrains dnsmasq with AppArmor and cgroups CPU and memory limitations
+* **DNS over HTTPS**
+  * Install the [dingo](https://github.com/pforemski/dingo) dns client
+  * Constrains dingo with AppArmor and cgroups CPU and memory limitations
 * **SSH Tunneling**
   * Adds a restricted `algo` group with no shell access and limited SSH forwarding options
   * Creates one limited, local account per user and an SSH public key for each

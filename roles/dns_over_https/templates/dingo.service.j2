@@ -1,0 +1,20 @@
+[Unit]
+Description=Dingo DNS-over-HTTPS Daemon
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+Restart=on-failure
+PIDFile=/var/run/dingo.pid
+EnvironmentFile=-/etc/default/dingo
+ExecStart=/usr/local/bin/dingo $ARGS
+MemoryLimit=16777216
+CPUAccounting=true
+CPUQuota=5%
+User=dingo
+Group=dingo
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+
+[Install]
+WantedBy=multi-user.target
