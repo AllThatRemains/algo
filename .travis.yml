@@ -44,7 +44,7 @@ before_install:
 install:
   - sudo tar xf $HOME/lxc/cache.tar -C / || echo "Didn't extract cache."
   - export LXC_ROOTFS=/var/lib/lxc/$LXC_NAME/rootfs
-  - 'sudo lxc-create -n $LXC_NAME -t ubuntu -- -r $LXC_RELEASE --mirror http://mirrors.us.kernel.org/ubuntu --packages python || true'
+  - 'sudo lxc-create -n $LXC_NAME -t ubuntu -- -r $LXC_RELEASE --packages python || true'
   - 'sudo lxc-start -n $LXC_NAME && until (sudo lxc-info -n $LXC_NAME | grep -q ^IP:); do printf . && sleep 1; done && sleep 2'
   - export LXC_IP="$(sudo lxc-info -Hin $LXC_NAME)"
   - sudo /bin/bash -c "printf '\n$LXC_IP test.lxc\n' >> /etc/hosts"
