@@ -1,0 +1,15 @@
+---
+listen_port: "{% if local_dns|d(false)|bool == true %}5353{% else %}53{% endif %}"
+dingo_flags: -gdns:auto -port {{ listen_port }} -bind {{ local_service_ip }}
+apparmor_enabled: true
+dingo_version_if_latest_unavailable: 0.13
+dns_encryption: true
+dns_encryption_provider: default
+dns_encryption_servers:
+  cloudflare:
+    ipv4:
+      - 1.1.1.1@853
+      - 1.0.0.1@853
+    ipv6:
+      - 2606:4700:4700::1111@853
+      - 2606:4700:4700::1001@853

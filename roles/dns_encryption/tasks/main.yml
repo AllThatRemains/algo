@@ -1,0 +1,8 @@
+---
+- name: Include Dingo installation
+  import_tasks: dingo/main.yml
+  when: dns_encryption_provider == "google"
+
+- name: Include Unbound installation
+  import_tasks: unbound/main.yml
+  when: dns_encryption_provider == "cloudflare"

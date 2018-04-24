@@ -1,0 +1,27 @@
+---
+- block:
+  - name: Unbound installed
+    package:
+      name: unbound
+
+  - name: Unbound configured
+    template:
+      src: unbound.conf.j2
+      dest: "{{ config_prefix|default('/') }}etc/unbound/unbound.conf"
+    notify:
+      - restart unbound
+
+  - name: Include tasks for Ubuntu
+    include_tasks: ubuntu.yml
+    when: '"Ubuntu" in OS.stdout'
+
+  - name: Unbound enabled and started
+    service:
+      name: unbound
+      state: started
+      enabled: true
+  rescue:
+    - debug: var=fail_hint
+      tags: always
+    - fail:
+      tags: always

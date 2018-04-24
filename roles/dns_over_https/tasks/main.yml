@@ -1,7 +1,0 @@
----
-- name: The DNS-over-HTTPS tag is defined
-  set_fact:
-    dns_over_https: true
-
-- name: Include Dingo installation
-  import_tasks: dingo/main.yml

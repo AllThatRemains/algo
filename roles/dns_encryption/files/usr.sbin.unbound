@@ -1,0 +1,19 @@
+#include <tunables/global>
+
+/usr/sbin/unbound {
+  #include <abstractions/base>
+  #include <abstractions/nameservice>
+  #include <abstractions/openssl>
+
+  capability chown,
+  capability dac_override,
+  capability net_bind_service,
+  capability setgid,
+  capability setuid,
+  capability sys_resource,
+
+  /etc/unbound/* r,
+  /run/unbound.pid rw,
+  /usr/sbin/unbound mr,
+  /var/lib/unbound/* rw,
+}

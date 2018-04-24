@@ -43,12 +43,6 @@ dns_enabled=${dns_enabled:-n}
 if [[ "$dns_enabled" =~ ^(y|Y)$ ]]; then ROLES+=" dns"; EXTRA_VARS+=" local_dns=true"; fi
 
 read -p "
-Do you want to configure DNS over HTTPS?
-[y/N]: " -r dns_over_https_enabled
-dns_over_https_enabled=${dns_over_https_enabled:-n}
-if [[ "$dns_over_https_enabled" =~ ^(y|Y)$ ]]; then ROLES+=" dns_over_https"; EXTRA_VARS+=" dns_over_https=true"; fi
-
-read -p "
 Do you want each user to have their own account for SSH tunneling?
 [y/N]: " -r ssh_tunneling_enabled
 ssh_tunneling_enabled=${ssh_tunneling_enabled:-n}

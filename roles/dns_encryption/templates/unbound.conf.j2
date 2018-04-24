@@ -1,0 +1,29 @@
+server:
+  access-control: 127.0.0.1/32 allow
+  access-control: {{ vpn_network }} allow
+  access-control: {{ vpn_network_ipv6 }} allow
+  access-control: {{ local_service_ip }}/32 allow
+  cache-max-ttl: 14400
+  cache-min-ttl: 600
+  do-tcp: yes
+  hide-identity: yes
+  hide-version: yes
+  interface: {{ local_service_ip }}@{{ listen_port }}
+  minimal-responses: yes
+  prefetch: yes
+  qname-minimisation: yes
+  rrset-roundrobin: yes
+  ssl-upstream: yes
+  use-caps-for-id: yes
+  verbosity: 1
+
+forward-zone:
+  name: "."
+{% for host in dns_encryption_servers['cloudflare']['ipv4'] %}
+  forward-addr: {{ host }}
+{% endfor %}
+{% if ipv6_support|d("") == "yes" %}
+{% for host in dns_encryption_servers['cloudflare']['ipv6'] %}
+  forward-addr: {{ host }}
+{% endfor %}
+{% endif %}

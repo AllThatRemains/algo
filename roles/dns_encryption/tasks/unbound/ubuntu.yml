@@ -1,0 +1,45 @@
+---
+- block:
+  - name: Ubuntu | Unbound profile for apparmor configured
+    copy:
+      src: usr.sbin.unbound
+      dest: /etc/apparmor.d/usr.sbin.unbound
+      owner: root
+      group: root
+      mode: 0600
+    notify: restart dingo
+
+  - name: Ubuntu | Enforce the dingo AppArmor policy
+    command: aa-enforce usr.sbin.unbound
+    changed_when: false
+  tags: apparmor
+  when: apparmor_enabled|default(false)|bool == true
+
+- name: Ubuntu | Ensure that the dnsmasq service directory exist
+  file:
+    path: /etc/systemd/system/unbound.service.d/
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Ubuntu | Setup the cgroup limitations for Unbound
+  copy:
+    dest: /etc/systemd/system/unbound.service.d/100-CustomLimitations.conf
+    content: |
+      [Service]
+      MemoryLimit=16777216
+      CPUAccounting=true
+      CPUQuota=5%
+  notify:
+    - daemon-reload
+    - restart unbound
+
+- name: Ubuntu | Unbound enabled and started
+  systemd:
+    name: unbound
+    state: started
+    daemon_reload: true
+    enabled: true
+
+- meta: flush_handlers
